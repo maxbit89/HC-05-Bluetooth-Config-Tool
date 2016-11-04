@@ -152,13 +152,15 @@ if __name__ == '__main__':
         def setName(self, name):
             return self.command("AT+NAME:"+name, "OK", 5)
         
-        def setBoudrate(self, boudrateid):
-            return self.command("AT+BAUD:"+boudrateid, "OK", 5);
+        def setBoudrate(self, settings):
+ #           return self.command("AT+UART:"+boudrateid, "OK", 5);
+            return self.command(settings)
             
         def setPin(self, pin):
             pin = int(pin)
             if(pin <= 9999) and (pin >= 0):
-                cmd = "AT+PIN:%04d" % pin
+                cmd = "AT+PASWD=%04d" % pin
+                print(cmd)
                 self.command(cmd, "OK", 5)
             else:
                 print("PIN NOT OK")
@@ -166,15 +168,20 @@ if __name__ == '__main__':
         def isReady(self):
             self.command("AT", "OK", 5)
 
-    ser = serial.serial_for_url('spy://COM4', baudrate=9600, timeout=1)
+    ser = serial.serial_for_url('spy://COM4', baudrate=19200, timeout=1)
     #~ ser = serial.Serial('COM1', baudrate=115200, timeout=1)
     with serial.threaded.ReaderThread(ser, PAN1322) as bt_module:
-#        print (bt_module.isReady())
-#        print(bt_module.getVersion())
-#        print(bt_module.setName("ttyLUBL01"))
-#        print(bt_module.getName)
- #       print(bt_module.setBoudrate("5"));
+        print("Power up HC0x chip and press the button.")
+        print (bt_module.isReady())
+        btName = raw_input("BT Name:")
+        ttysettings = raw_input("tty settings e.g. 19200,0,0")
+        print(bt_module.getVersion())
+#        print(bt_module.setPin(0000))
+        if not (btName == ""):
+            print(bt_module.setName(btName))
+        print(bt_module.getName)
+        if not (ttysettings == ""):
+            print(bt_module.setBoudrate("AT+UART=19200,0,0"));
         print(bt_module.getBaudrate())
- #       bt_module.setPin(0000);
     print("exit")
     exit(0)
